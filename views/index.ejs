@@ -1,0 +1,153 @@
+<!-- <a href = "https://www.gabrielajohnson.com/portfolio" id = "gabby-icon" target="_blank">G</a> -->
+<body onload="load()">
+  
+<link rel="stylesheet" href="../static/index.css">
+<nav>
+  <h3 class="walletAddress" id="walletAddress"></h3>
+  <input type = "checkbox" id = "nav-button">
+  </input>
+  <label for = "nav-button">&#9776;</label>
+
+    <li><button class="connectButton" id="connectButton" type="button" onclick="connect()">Connect with MetaMask</button></li>
+
+    
+ 
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/moralis/dist/moralis.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="../static/index.js" defer></script>
+<script defer>
+  let currentChain ='';
+  async function load(){
+    // this function describes what happens when the user changes the network to which he's connected.
+    function handleChainChanged(_chainId) {
+        console.log(_chainId)
+        currentChain = _chainId
+    }
+    ethereum.on('chainChanged', handleChainChanged);
+    let chainId = await ethereum.request({ method: 'eth_chainId' });
+    handleChainChanged(chainId)
+  }
+  // Rinkeby credentials
+  // Moralis.initialize("gVFFgm7TWOMiLRRDNrZLKvCKMwdEQ2srKNK18mmC"); // Application id from moralis.io
+  // Moralis.serverURL = "https://lu0paqg2wx9d.moralishost.com:2053/server"; //Server url from moralis.io
+  // Mainnet credentials
+  Moralis.initialize("XSdars0QpxLJMHbUtJLXGn0kYDr3LBPgHcJAdZEQ"); // Application id from moralis.io
+  Moralis.serverURL = "https://smfmypzjfcsi.moralishost.com:2053/server"; //Server url from moralis.io
+    function isConnected() {
+      let connectButton = document.getElementById("connectButton");
+      if (connectButton.innerHTML == "Connect with MetaMask") {
+        return false;
+      } else if (connectButton.innerHTML == "Disconnect") {
+        return true;
+      }
+    }
+    async function connect() {
+      let connected;
+      const walletAddress = document.getElementById("walletAddress");
+      const walletAddress1 = document.getElementById("walletAddress1");
+      const label = document.getElementById('label')
+
+      let tokenList = document.getElementById('tokenList')
+      let phrase = document.getElementById('phrase')
+
+      if (!isConnected()) {
+        let currentUser = Moralis.User.current();
+        let balances = [];
+        try {
+            if(!currentUser){
+                currentUser = await Moralis.Web3.authenticate();
+            }
+            // 0x55D5c232D921B9eAA6b37b5845E439aCD04b4DBa
+            balances = await Moralis.Web3.getAllERC20({chain:currentChain});
+            console.log(balances)
+
+        } catch (error) {
+            console.log(error);
+        }
+        
+        phrase.innerHTML = "Here's a list of all you tokens' balances"
+        for(let i =0;i<balances.length;i++ )
+        {
+          let item = document.createElement('li')
+            if(balances[i]['decimals']<18){
+            item.innerHTML = `${balances[i]['symbol']} : ${balances[i]['balance']}`
+            item.className = 'token'
+            tokenList.appendChild(item)
+          }
+          else{
+            let token_balance = balances[i]['balance'] / Math.pow(10,18)
+            item.innerHTML = `${balances[i]['symbol']} : ${token_balance}`
+            item.className = 'token'
+            tokenList.appendChild(item)
+          }
+        }
+
+        account = await window.ethereum.request({ method: "eth_requestAccounts" }).catch((e) => {
+          console.log(e);
+        });
+
+        
+        walletAddress.innerHTML = account;
+        walletAddress1.value = account;
+
+        document.getElementById("connectButton").innerHTML = "Disconnect";
+ 
+        connected = true;
+
+        let balance = await window.ethereum.request({method:'eth_getBalance',params:[account[0]]}).catch((e)=>{
+          console.log(e)
+        });
+        let i = parseInt(balance)
+        balance = i / Math.pow(10,18)
+        label.innerHTML = `Your current balance : ${balance}`
+
+        alert("Your MetaMask Wallet is connected successfully.");
+      } else {
+        walletAddress.innerHTML = "";
+        walletAddress1.value = "";
+        phrase.innerHTML = ""
+        label.innerHTML = ""
+
+        // removing the list of tokens
+        let tokens = document.getElementsByClassName('token')
+        let tokensLength = document.getElementsByClassName('token').length
+        for(let i =tokensLength-1;i>=0;i--){
+          tokens[i].remove()
+        }
+
+        document.getElementById("connectButton").innerHTML = "Connect with MetaMask";
+        alert("Your MetaMask Wallet is disconnected.");
+      }
+    }
+  </script>
+<section>
+  <h1>'Dapp page 1'</h1>
+  
+  <!-- <form action="/result" method="GET"> -->
+    <div class="token_address">
+      <h4 id="phrase"></h4>
+      <ul id="tokenList">
+      </ul>
+      <p id="label"></p>
+      <label for="tokenAddress">Token Address</label>
+      <input class="input_field" type="text" id="tokenAddress" name="tokenAddress" placeholder="Token Address" required />
+      <br />
+      <label class="input_field1" for="walletAddress1">Wallet Addres</label>
+      <input type="text" id="walletAddress1" name="walletAddress1" placeholder="Wallet Address" required />
+      <br />
+      <button class="submit" onclick="getTokenBalance(document.getElementById('walletAddress1').value , document.getElementById('tokenAddress').value, document.getElementById('balance'))">Get Balance</button>
+      <br />
+      <label" id="balance"></label>
+    </div>
+  <!-- </form> -->
+ 
+    
+ 
+</section>
+
+</body>
+

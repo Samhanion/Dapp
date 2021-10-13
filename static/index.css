@@ -1,0 +1,178 @@
+@import url("https://fonts.googleapis.com/css?family=Pacifico|Sriracha&display=swap");
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#gabby-icon {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(#109be9, #155dca);
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 30px;
+  text-decoration: none;
+  margin: 5px;
+  font-family: cursive;
+  box-shadow: 2px 2px 2px grey;
+}
+
+#gabby-icon:hover {
+  background: #0c83bb;
+  transition: background 1s;
+}
+
+nav {
+  width: 100%;
+  background: #878787;
+  position: fixed;
+  top: 0;
+  height: 50px;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1;
+}
+
+section {
+  background: linear-gradient(#2c2c2c, #4a4a4a);
+  /* height: calc(100% - 50px); */
+  /* height: 100%; */
+  top: 50px;
+  position: relative;
+  display: block;
+  align-items: center;
+  justify-content: center;
+  /* z-index: -1; */
+  min-height: 700px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 70px;
+  font-family: arial;
+  text-align: center;
+  color: white;
+  font-family: "Sriracha";
+}
+
+label {
+  display: none;
+}
+
+nav li {
+  display: inline;
+}
+
+#nav-button {
+  display: none;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  font-family: arial;
+  padding: 0px 10px;
+}
+
+@media only screen and (max-width: 736px) and (orientation: portrait) {
+  nav {
+    align-items: center;
+  }
+
+  nav ul {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    background: #787578;
+    max-height: 0;
+    transition: max-height 0.15s ease-out;
+    overflow: hidden;
+    transition: all 1s ease-in-out;
+  }
+
+  nav li {
+    display: block;
+    width: 100%;
+    padding: 5px;
+  }
+
+  label {
+    display: block;
+    padding: 0px 10px;
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  label:hover {
+    color: white;
+  }
+
+  nav a {
+    width: 100%;
+    display: block;
+  }
+
+  #nav-button:checked ~ ul {
+    max-height: 540px;
+    transition: all 1s ease-in-out;
+  }
+
+  nav li:hover {
+    background: darkpurple;
+  }
+}
+.connectButton {
+  padding: 7px;
+  background-color: #2c2c2c;
+  color: azure;
+  border-radius: 5px;
+  margin-top: 8px;
+  margin-right: 5px;
+}
+.walletAddress {
+  margin-top: 15px;
+}
+.token_address {
+  margin-left: 580px;
+  align-items: center;
+  align-content: center;
+  /* z-index: 4; */
+}
+.input_field {
+  /* margin-top: 5px; */
+  margin-bottom: 7px;
+}
+.input_field1 {
+  /* margin-top: 5px; */
+  margin-bottom: 7px;
+}
+.submit {
+  margin-top: 7px;
+  margin-bottom: 7px;
+  padding: 10px;
+}
+.token {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #cfbdbd;
+  padding: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  color: #3f3d3d;
+  display: block;
+  position: relative;
+  text-align: left;
+  max-width: 200px;
+}
+.token:hover {
+  background-color: antiquewhite;
+}
