@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const Web3 = require("web3");
 
+let PORT = process.env.PORT || 3000;
+
 app.set("view-engine", "ejs");
 app.use("/static", express.static("./static/"));
 
@@ -48,4 +50,4 @@ app.get("/result", async (req, res) => {
   res.render("result.ejs", { balance });
 });
 
-app.listen(3000);
+app.listen(PORT);
