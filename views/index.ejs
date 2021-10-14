@@ -9,6 +9,13 @@
   <label for = "nav-button">&#9776;</label>
 
     <li><button class="connectButton" id="connectButton" type="button" onclick="connect()">Connect with MetaMask</button></li>
+    <select name="Network" id="Network" class="Network">
+      <option value="Mainnet">Mainnet</option>
+      <option selected='selected' value="Rinkeby">Rinkeby</option>
+      <option value="Ropsten">Ropsten</option>
+      <option value="Kovan">Kovan</option>
+      <option value="Georeli">Georeli</option>
+    </select>
 
     
  
@@ -25,7 +32,7 @@
     // this function describes what happens when the user changes the network to which he's connected.
     function handleChainChanged(_chainId) {
         console.log(_chainId)
-        currentChain = _chainId
+        // currentChain = _chainId
     }
     ethereum.on('chainChanged', handleChainChanged);
     let chainId = await ethereum.request({ method: 'eth_chainId' });
@@ -50,6 +57,8 @@
       const walletAddress = document.getElementById("walletAddress");
       const walletAddress1 = document.getElementById("walletAddress1");
       const label = document.getElementById('label')
+      let network = document.getElementById('Network')
+      currentChain = network.value
 
       let tokenList = document.getElementById('tokenList')
       let phrase = document.getElementById('phrase')

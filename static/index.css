@@ -176,3 +176,12 @@ nav a {
 .token:hover {
   background-color: antiquewhite;
 }
+.Network {
+  /* padding: 7px; */
+  background-color: #3a3939;
+  color: azure;
+  border-radius: 5px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-right: 5px;
+}
