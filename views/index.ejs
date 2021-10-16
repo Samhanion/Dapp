@@ -10,11 +10,11 @@
 
     <li><button class="connectButton" id="connectButton" type="button" onclick="connect()">Connect with MetaMask</button></li>
     <select name="Network" id="Network" class="Network">
-      <option value="Mainnet">Mainnet</option>
-      <option selected='selected' value="Rinkeby">Rinkeby</option>
-      <option value="Ropsten">Ropsten</option>
-      <option value="Kovan">Kovan</option>
-      <option value="Georeli">Georeli</option>
+      <option value="0x1">Mainnet</option>
+      <option selected='selected' value="0x4">Rinkeby</option>
+      <option value="0x3">Ropsten</option>
+      <option value="0x2a">Kovan</option>
+      <option value="0x5">Georeli</option>
     </select>
 
     
@@ -59,6 +59,10 @@
       const label = document.getElementById('label')
       let network = document.getElementById('Network')
       currentChain = network.value
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: currentChain }],
+      });
 
       let tokenList = document.getElementById('tokenList')
       let phrase = document.getElementById('phrase')
@@ -78,11 +82,13 @@
             console.log(error);
         }
         
-        phrase.innerHTML = "Here's a list of all you tokens' balances"
+        phrase.innerHTML = "Here's a list of all your tokens' balances:"
         for(let i =0;i<balances.length;i++ )
         {
           let item = document.createElement('li')
-            if(balances[i]['decimals']<18){
+          // if there's only one token 'ETH' with the balance of ZERO do not add it
+          if(!(balances[i]['symbol'] == 'ETH' && balances[i]['balance']=='0')){
+          if(balances[i]['decimals']<18){
             item.innerHTML = `${balances[i]['symbol']} : ${balances[i]['balance']}`
             item.className = 'token'
             tokenList.appendChild(item)
@@ -93,6 +99,10 @@
             item.className = 'token'
             tokenList.appendChild(item)
           }
+        }
+        else{
+          phrase.innerHTML = "You don't have any tokens on current network."
+        }
         }
 
         account = await window.ethereum.request({ method: "eth_requestAccounts" }).catch((e) => {
