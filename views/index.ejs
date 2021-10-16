@@ -9,7 +9,7 @@
   <label for = "nav-button">&#9776;</label>
 
     <li><button class="connectButton" id="connectButton" type="button" onclick="connect()">Connect with MetaMask</button></li>
-    <select name="Network" id="Network" class="Network">
+    <select name="Network" id="Network" class="Network" onchange="networkChanged()">
       <option value="0x1">Mainnet</option>
       <option selected='selected' value="0x4">Rinkeby</option>
       <option value="0x3">Ropsten</option>
@@ -27,8 +27,10 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script src="../static/index.js" defer></script>
 <script defer>
-  let currentChain ='';
+  let currentChain;
+  let network = document.getElementById('Network')
   async function load(){
+    currentChain =network.value
     // this function describes what happens when the user changes the network to which he's connected.
     function handleChainChanged(_chainId) {
         console.log(_chainId)
@@ -52,13 +54,111 @@
         return true;
       }
     }
+    // on selecting another network
+    async function networkChanged(){
+      // if disconnected => only change the network
+      if(!isConnected()){
+      currentChain =network.value
+      // change metamask current network
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: currentChain }],
+      });
+      console.log(currentChain)
+    } // if connected => update everything
+    else{
+      currentChain =network.value
+      // let connected;
+      const walletAddress = document.getElementById("walletAddress");
+      const walletAddress1 = document.getElementById("walletAddress1");
+      const label = document.getElementById('label')
+      
+      // change metamask current network
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: currentChain }],
+      });
+
+      let tokenList = document.getElementById('tokenList')
+      let phrase = document.getElementById('phrase')
+
+
+      // removing info of the previous network
+        phrase.innerHTML = ""
+        label.innerHTML = ""
+
+        // removing the list of tokens
+        let tokens = document.getElementsByClassName('token')
+        let tokensLength = document.getElementsByClassName('token').length
+        for(let i =tokensLength-1;i>=0;i--){
+          tokens[i].remove()
+        }
+
+      // diplaying new info of the new network
+        let currentUser = Moralis.User.current();
+        let balances = [];
+        try {
+            if(!currentUser){
+                currentUser = await Moralis.Web3.authenticate();
+            }
+            // 0x55D5c232D921B9eAA6b37b5845E439aCD04b4DBa
+            balances = await Moralis.Web3.getAllERC20({chain:currentChain});
+            console.log(balances)
+
+        } catch (error) {
+            console.log(error);
+        }
+        
+        phrase.innerHTML = "Here's a list of all your tokens' balances:"
+        for(let i =0;i<balances.length;i++ )
+        {
+          let item = document.createElement('li')
+          // if there's only one token 'ETH' with the balance of ZERO do not add it
+          if(!(balances[i]['symbol'] == 'ETH' && balances[i]['balance']=='0')){
+          if(balances[i]['decimals']<18){
+            item.innerHTML = `${balances[i]['symbol']} : ${balances[i]['balance']}`
+            item.className = 'token'
+            tokenList.appendChild(item)
+          }
+          else{
+            let token_balance = balances[i]['balance'] / Math.pow(10,18)
+            item.innerHTML = `${balances[i]['symbol']} : ${token_balance}`
+            item.className = 'token'
+            tokenList.appendChild(item)
+          }
+        }
+        else{
+          phrase.innerHTML = "You don't have any tokens on current network."
+        }
+        }
+
+        // getting the account
+        account = await window.ethereum.request({ method: "eth_requestAccounts" }).catch((e) => {
+          console.log(e);
+        });
+
+        // displaying the account
+        walletAddress.innerHTML = account;
+        walletAddress1.value = account;
+
+        // getting the balance
+        let balance = await window.ethereum.request({method:'eth_getBalance',params:[account[0]]}).catch((e)=>{
+          console.log(e)
+        });
+        let i = parseInt(balance)
+        balance = i / Math.pow(10,18)
+        label.innerHTML = `Your current balance : ${balance}`
+
+    }
+    }
     async function connect() {
+      currentChain =network.value
       let connected;
       const walletAddress = document.getElementById("walletAddress");
       const walletAddress1 = document.getElementById("walletAddress1");
       const label = document.getElementById('label')
-      let network = document.getElementById('Network')
-      currentChain = network.value
+      
+      // change metamask current network
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: currentChain }],
